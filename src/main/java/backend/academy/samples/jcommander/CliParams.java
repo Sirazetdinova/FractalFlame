@@ -1,10 +1,10 @@
 package backend.academy.samples.jcommander;
 
 import com.beust.jcommander.Parameter;
-import lombok.Getter;
-import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @ToString
