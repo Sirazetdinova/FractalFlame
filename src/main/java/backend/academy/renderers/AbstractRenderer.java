@@ -12,7 +12,7 @@ import static backend.academy.utils.RandomUtils.random;
 import static backend.academy.utils.WorldUtils.mapRange;
 import static backend.academy.utils.WorldUtils.rotate;
 
-public abstract class AbstractRenderer  {
+public abstract class AbstractRenderer {
     private static final int NORMALIZATION_ITERATIONS = 20;
 
     protected void handlePixel(Pixel pixel, Color color) {

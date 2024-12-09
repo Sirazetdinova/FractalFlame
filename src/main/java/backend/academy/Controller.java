@@ -23,8 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Controller {
-    private final Renderer renderer = new Renderer();
     public static final String IMAGE_PATH = "C:\\FractalFlame\\image.png";
+    public static final int DEFAULT_WIDTH = 3840;
+    public static final int DEFAULT_HEIGHT = 2160;
+    public static final int DEFAULT_X_MIN = -3;
+    public static final int DEFAULT_Y_MIN = -2;
+    public static final int DEFAULT_WIDTH_RANGE = 6;
+    public static final int DEFAULT_HEIGHT_RANGE = 6;
 
     private static final Map<String, Transformation> TRANSFORMATION_MAP = Map.of(
         "Disk Transformation", new DiskTransformation(),
@@ -35,6 +40,8 @@ public class Controller {
         "Sine Transformation", new SineTransformation(),
         "Spherical Transformation", new SphericalTransformation()
     );
+
+    private final Renderer renderer = new Renderer();
 
     public void run() {
         createDirectory();
@@ -55,7 +62,7 @@ public class Controller {
                     if (transformation != null) {
                         transformations.add(transformation);
                     } else {
-                        System.out.println("Warning: Transformation not recognized: " + name);
+                        log.warn("Transformation not recognized: {}", name);
                     }
                 }
 
@@ -69,14 +76,21 @@ public class Controller {
         }
     }
 
-    private void renderImage(List<Transformation> transformations, int affine, int symmetry, int samples, int iterations, boolean useMultithreading) {
+    private void renderImage(
+        List<Transformation> transformations,
+        int affine,
+        int symmetry,
+        int samples,
+        int iterations,
+        boolean useMultithreading
+    ) {
         try {
             FractalImage image;
             if (useMultithreading) {
                 MultiThreadRenderer multiThreadRenderer = new MultiThreadRenderer();
                 image = multiThreadRenderer.render(
-                    FractalImage.create(3840, 2160),
-                    new Rect(-3, -2, 6, 6),
+                    FractalImage.create(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+                    new Rect(DEFAULT_X_MIN, DEFAULT_Y_MIN, DEFAULT_WIDTH_RANGE, DEFAULT_HEIGHT_RANGE),
                     transformations,
                     affine,
                     symmetry,
@@ -86,8 +100,8 @@ public class Controller {
             } else {
                 SingleThreadRenderer singleThreadRenderer = new SingleThreadRenderer();
                 image = singleThreadRenderer.render(
-                    FractalImage.create(3840, 2160),
-                    new Rect(-3, -2, 6, 6),
+                    FractalImage.create(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+                    new Rect(DEFAULT_X_MIN, DEFAULT_Y_MIN, DEFAULT_WIDTH_RANGE, DEFAULT_HEIGHT_RANGE),
                     transformations,
                     affine,
                     symmetry,
@@ -103,15 +117,15 @@ public class Controller {
             renderer.displayResult(IMAGE_PATH);
         } catch (Exception e) {
             log.error("Error occurred during rendering: ", e);
-            System.out.println("An error occurred: " + e.getMessage());
         }
     }
 
     public void createDirectory() {
         Path path = Path.of("C:\\FractalFlame");
-        if (!path.toFile().exists()) {
-            path.toFile().mkdir();
+        if (!path.toFile().exists() && !path.toFile().mkdir()) {
+            log.error("Failed to create directory: {}", path);
+        } else {
+            log.info("Directory created or already exists: {}", path);
         }
     }
 }
-
