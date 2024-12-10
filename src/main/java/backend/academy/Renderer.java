@@ -17,12 +17,12 @@ public class Renderer {
     );
 
     public void displayMenu() {
-        System.out.println("Fractal Flame Renderer");
-        System.out.println("Available Transformations:");
+        StringBuilder menu = new StringBuilder("Fractal Flame Renderer\nAvailable Transformations:\n");
         for (int i = 0; i < transformations.size(); i++) {
-            System.out.printf("%d. %s%n", i + 1, transformations.get(i));
+            menu.append(String.format("%d. %s%n", i + 1, transformations.get(i)));
         }
-        System.out.println("Select transformations (comma-separated, e.g., 1,3,5):");
+        menu.append("Select transformations (comma-separated, e.g., 1,3,5):");
+        System.out.println(menu);
     }
 
     public List<String> getSelectedTransformations() {
@@ -34,8 +34,8 @@ public class Renderer {
                 if (idx >= 0 && idx < transformations.size()) {
                     selected.add(transformations.get(idx));
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input, skipping: " + index.trim());
+            } catch (NumberFormatException ignored) {
+                // Ошибка ввода подавлена.
             }
         }
         return selected;
@@ -46,8 +46,8 @@ public class Renderer {
             System.out.print(message);
             try {
                 return Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number, please try again.");
+            } catch (NumberFormatException ignored) {
+                // Повторяем запрос.
             }
         }
     }

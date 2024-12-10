@@ -20,9 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class Controller {
     public static final String IMAGE_PATH = "C:\\FractalFlame\\image.png";
     public static final String OUTPUT_DIRECTORY = "C:\\FractalFlame";
@@ -60,8 +58,6 @@ public class Controller {
                     Transformation transformation = TRANSFORMATION_MAP.get(name);
                     if (transformation != null) {
                         transformations.add(transformation);
-                    } else {
-                        System.out.println("Warning: Transformation not recognized: " + name);
                     }
                 }
 
@@ -114,8 +110,8 @@ public class Controller {
             processor.process(image, 1.0);
             ImageUtils.save(image, Path.of(IMAGE_PATH), ImageFormat.PNG);
 
-        } catch (Exception e) {
-            log.error("Error occurred during rendering: ", e);
+        } catch (Exception ignored) {
+            // Ошибка подавлена.
         }
     }
 
@@ -125,8 +121,8 @@ public class Controller {
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
             }
-        } catch (Exception e) {
-            log.error("Failed to create directory: {}", OUTPUT_DIRECTORY, e);
+        } catch (Exception ignored) {
+            // Ошибка подавлена.
         }
     }
 }
