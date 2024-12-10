@@ -15,6 +15,7 @@ import backend.academy.transformations.PolarTransformation;
 import backend.academy.transformations.SineTransformation;
 import backend.academy.transformations.SphericalTransformation;
 import backend.academy.transformations.Transformation;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Controller {
     public static final String IMAGE_PATH = "C:\\FractalFlame\\image.png";
-    public static final int DEFAULT_WIDTH = 3840;
-    public static final int DEFAULT_HEIGHT = 2160;
-    public static final int DEFAULT_X_MIN = -3;
-    public static final int DEFAULT_Y_MIN = -2;
-    public static final int DEFAULT_WIDTH_RANGE = 6;
-    public static final int DEFAULT_HEIGHT_RANGE = 6;
+    public static final String OUTPUT_DIRECTORY = "C:\\FractalFlame";
+
+    private static final int DEFAULT_IMAGE_WIDTH = 3840;
+    private static final int DEFAULT_IMAGE_HEIGHT = 2160;
+    private static final Rect DEFAULT_RENDER_RECT = new Rect(-3, -2, 6, 6);
 
     private static final Map<String, Transformation> TRANSFORMATION_MAP = Map.of(
         "Disk Transformation", new DiskTransformation(),
@@ -49,24 +49,24 @@ public class Controller {
             while (true) {
                 renderer.displayMenu();
                 List<String> selectedTransformations = renderer.getSelectedTransformations();
-
                 int affine = renderer.promptForInt("Enter Affine Amount: ");
                 int symmetry = renderer.promptForInt("Enter Symmetry: ");
                 int samples = renderer.promptForInt("Enter Samples Amount: ");
                 int iterations = renderer.promptForInt("Enter Iteration Amount: ");
                 boolean useMultithreading = renderer.promptForBoolean("Enable MultiThreading?");
-
                 List<Transformation> transformations = new ArrayList<>();
+
                 for (String name : selectedTransformations) {
                     Transformation transformation = TRANSFORMATION_MAP.get(name);
                     if (transformation != null) {
                         transformations.add(transformation);
                     } else {
-                        log.warn("Transformation not recognized: {}", name);
+                        System.out.println("Warning: Transformation not recognized: " + name);
                     }
                 }
 
                 renderImage(transformations, affine, symmetry, samples, iterations, useMultithreading);
+
                 if (!renderer.promptForBoolean("Render another image?")) {
                     break;
                 }
@@ -89,8 +89,8 @@ public class Controller {
             if (useMultithreading) {
                 MultiThreadRenderer multiThreadRenderer = new MultiThreadRenderer();
                 image = multiThreadRenderer.render(
-                    FractalImage.create(DEFAULT_WIDTH, DEFAULT_HEIGHT),
-                    new Rect(DEFAULT_X_MIN, DEFAULT_Y_MIN, DEFAULT_WIDTH_RANGE, DEFAULT_HEIGHT_RANGE),
+                    FractalImage.create(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT),
+                    DEFAULT_RENDER_RECT,
                     transformations,
                     affine,
                     symmetry,
@@ -100,8 +100,8 @@ public class Controller {
             } else {
                 SingleThreadRenderer singleThreadRenderer = new SingleThreadRenderer();
                 image = singleThreadRenderer.render(
-                    FractalImage.create(DEFAULT_WIDTH, DEFAULT_HEIGHT),
-                    new Rect(DEFAULT_X_MIN, DEFAULT_Y_MIN, DEFAULT_WIDTH_RANGE, DEFAULT_HEIGHT_RANGE),
+                    FractalImage.create(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT),
+                    DEFAULT_RENDER_RECT,
                     transformations,
                     affine,
                     symmetry,
@@ -112,20 +112,21 @@ public class Controller {
 
             LogGammaCorrectionProcessor processor = new LogGammaCorrectionProcessor();
             processor.process(image, 1.0);
-
             ImageUtils.save(image, Path.of(IMAGE_PATH), ImageFormat.PNG);
-            renderer.displayResult(IMAGE_PATH);
+
         } catch (Exception e) {
             log.error("Error occurred during rendering: ", e);
         }
     }
 
     public void createDirectory() {
-        Path path = Path.of("C:\\FractalFlame");
-        if (!path.toFile().exists() && !path.toFile().mkdir()) {
-            log.error("Failed to create directory: {}", path);
-        } else {
-            log.info("Directory created or already exists: {}", path);
+        Path path = Path.of(OUTPUT_DIRECTORY);
+        try {
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+        } catch (Exception e) {
+            log.error("Failed to create directory: {}", OUTPUT_DIRECTORY, e);
         }
     }
 }

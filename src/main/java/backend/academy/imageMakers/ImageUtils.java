@@ -50,6 +50,5 @@ public final class ImageUtils {
             log.error("Error while saving image to file: {}", filename, e);
             throw new RuntimeException("Error while saving image to file: " + filename, e);
         }
-        log.info("Image saved successfully to {}", filename);
     }
 }
