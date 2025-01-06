@@ -81,10 +81,11 @@ public class Controller {
         boolean useMultithreading
     ) {
         try {
-            backend.academy.renderers.Renderer renderer = useMultithreading
+            backend.academy.renderers.Renderer localRenderer = useMultithreading
                 ? new MultiThreadRenderer()
                 : new SingleThreadRenderer();
-            FractalImage image = renderer.render(
+
+            FractalImage image = localRenderer.render(
                 FractalImage.create(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT),
                 DEFAULT_RENDER_RECT,
                 transformations,
