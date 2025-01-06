@@ -12,7 +12,7 @@ import static backend.academy.utils.RandomUtils.random;
 import static backend.academy.utils.WorldUtils.mapRange;
 import static backend.academy.utils.WorldUtils.rotate;
 
-public abstract class AbstractRenderer {
+public abstract class AbstractRenderer implements Renderer {
     private static final int NORMALIZATION_ITERATIONS = 20;
 
     protected void handlePixel(Pixel pixel, Color color) {
@@ -67,4 +67,15 @@ public abstract class AbstractRenderer {
             }
         }
     }
+
+    @Override
+    public abstract FractalImage render(
+        FractalImage canvas,
+        Rect world,
+        List<Transformation> variants,
+        int affineAmount,
+        int symmetry,
+        int samples,
+        int iterPerSample
+    );
 }

@@ -81,30 +81,18 @@ public class Controller {
         boolean useMultithreading
     ) {
         try {
-            FractalImage image;
-            if (useMultithreading) {
-                MultiThreadRenderer multiThreadRenderer = new MultiThreadRenderer();
-                image = multiThreadRenderer.render(
-                    FractalImage.create(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT),
-                    DEFAULT_RENDER_RECT,
-                    transformations,
-                    affine,
-                    symmetry,
-                    samples,
-                    iterations
-                );
-            } else {
-                SingleThreadRenderer singleThreadRenderer = new SingleThreadRenderer();
-                image = singleThreadRenderer.render(
-                    FractalImage.create(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT),
-                    DEFAULT_RENDER_RECT,
-                    transformations,
-                    affine,
-                    symmetry,
-                    samples,
-                    iterations
-                );
-            }
+            backend.academy.renderers.Renderer renderer = useMultithreading
+                ? new MultiThreadRenderer()
+                : new SingleThreadRenderer();
+            FractalImage image = renderer.render(
+                FractalImage.create(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT),
+                DEFAULT_RENDER_RECT,
+                transformations,
+                affine,
+                symmetry,
+                samples,
+                iterations
+            );
 
             LogGammaCorrectionProcessor processor = new LogGammaCorrectionProcessor();
             processor.process(image, 1.0);
