@@ -21,8 +21,8 @@ public class Renderer {
         for (int i = 0; i < transformations.size(); i++) {
             menu.append(String.format("%d. %s%n", i + 1, transformations.get(i)));
         }
-        menu.append("Select transformations (comma-separated, e.g., 1,3,5):");
-        System.out.println(menu);
+        menu.append("Select transformations (comma-separated, e.g., 1,3,5): ");
+        System.out.print(menu);
     }
 
     public List<String> getSelectedTransformations() {

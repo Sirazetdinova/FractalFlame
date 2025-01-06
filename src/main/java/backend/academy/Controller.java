@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Controller {
-    public static final String IMAGE_PATH = "C:\\FractalFlame\\image.png";
-    public static final String OUTPUT_DIRECTORY = "C:\\FractalFlame";
+    private static final Path OUTPUT_DIRECTORY = Path.of(System.getProperty("user.home"), "FractalFlame");
+    private static final Path IMAGE_PATH = OUTPUT_DIRECTORY.resolve("image.png");
 
     private static final int DEFAULT_IMAGE_WIDTH = 3840;
     private static final int DEFAULT_IMAGE_HEIGHT = 2160;
@@ -108,7 +108,7 @@ public class Controller {
 
             LogGammaCorrectionProcessor processor = new LogGammaCorrectionProcessor();
             processor.process(image, 1.0);
-            ImageUtils.save(image, Path.of(IMAGE_PATH), ImageFormat.PNG);
+            ImageUtils.save(image, IMAGE_PATH, ImageFormat.PNG);
 
         } catch (Exception ignored) {
             // Ошибка подавлена.
@@ -116,10 +116,9 @@ public class Controller {
     }
 
     public void createDirectory() {
-        Path path = Path.of(OUTPUT_DIRECTORY);
         try {
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
+            if (!Files.exists(OUTPUT_DIRECTORY)) {
+                Files.createDirectories(OUTPUT_DIRECTORY);
             }
         } catch (Exception ignored) {
             // Ошибка подавлена.
